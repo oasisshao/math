@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🐹 小一數學打地鼠</title>
+
+<style>
+body{
+    margin:0;
+    font-family:"Microsoft JhengHei",sans-serif;
+    background:linear-gradient(#87CEEB,#E8F8FF);
+    text-align:center;
+}
+
+h1{
+    color:#2c3e50;
+    margin-top:20px;
+}
+
+.game-info{
+    font-size:24px;
+    font-weight:bold;
+    margin:15px;
+}
+
+.question{
+    background:white;
+    width:90%;
+    max-width:700px;
+    margin:auto;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.2);
+    font-size:28px;
+    line-height:1.8;
+    color:#333;
+    min-height:150px;
+}
+
+button{
+    margin:20px;
+    padding:12px 25px;
+    font-size:20px;
+    border:none;
+    border-radius:10px;
+    background:#3498db;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#2980b9;
+}
+
+.game-board{
+    width:750px;
+    max-width:95%;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+    margin-top:20px;
+}
+
+.hole{
+    aspect-ratio:1/1;
+    background:#6D4C41;
+    border-radius:50%;
+    position:relative;
+    overflow:hidden;
+}
+
+.mole{
+    position:absolute;
+    width:80%;
+    height:80%;
+    left:50%;
+    bottom:-100%;
+    transform:translateX(-50%);
+    background:#8D6E63;
+    border-radius:50%;
+    transition:0.3s;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:white;
+    font-size:34px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.show{
+    bottom:10%;
+}
+
+.correct{
+    background:#4CAF50 !important;
+}
+
+.wrong{
+    background:#E53935 !important;
+}
+
+#result{
+    font-size:32px;
+    font-weight:bold;
+    color:#ff5722;
+    margin:20px;
+}
+
+#level{
+    font-size:26px;
+    color:#FF9800;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🐹 小一數學打地鼠 🐹</h1>
+
+<div class="game-info">
+分數：<span id="score">0</span>
+｜
+時間：<span id="time">60</span> 秒
+</div>
+
+<div id="level">等級：數學小新手</div>
+
+<div class="question" id="question">
+按下開始遊戲
+</div>
+
+<button onclick="startGame()">開始遊戲</button>
+
+<div class="game-board" id="board"></div>
+
+<div id="result"></div>
+
+<script>
+
+let score=0;
+let timeLeft=60;
+let gameRunning=false;
+let correctAnswer=0;
+
+const board=document.getElementById("board");
+
+for(let i=0;i<9;i++){
+
+    const hole=document.createElement("div");
+    hole.className="hole";
+
+    const mole=document.createElement("div");
+    mole.className="mole";
+
+    mole.addEventListener("click",()=>{
+
+        if(!gameRunning)return;
+
+        const chosen=parseInt(mole.dataset.answer);
+
+        if(chosen===correctAnswer){
+
+            score+=10;
+
+            document.getElementById("score").textContent=score;
+
+            mole.classList.add("correct");
+
+            updateLevel();
+
+            setTimeout(()=>{
+                mole.classList.remove("correct");
+            },200);
+
+            generateQuestion();
+
+        }else{
+
+            mole.classList.add("wrong");
+
+            setTimeout(()=>{
+                mole.classList.remove("wrong");
+            },200);
+
+        }
+
+    });
+
+    hole.appendChild(mole);
+    board.appendChild(hole);
+}
+
+function updateLevel(){
+
+    let text="數學小新手";
+
+    if(score>=50)
+        text="數學小高手";
+
+    if(score>=100)
+        text="數學達人";
+
+    if(score>=150)
+        text="數學大師";
+
+    document.getElementById("level").textContent=
+    "等級：" + text;
+}
+
+function generateQuestion(){
+
+    const addStories=[
+        {
+            template:(a,b)=>
+            `🍎 小明有 ${a} 顆蘋果<br>
+          
