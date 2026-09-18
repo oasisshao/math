@@ -220,4 +220,166 @@ function generateQuestion(){
         {
             template:(a,b)=>
             `🍎 小明有 ${a} 顆蘋果<br>
-          
+            媽媽又給他 ${b} 顆蘋果<br><br>
+            現在共有幾顆蘋果？`
+        },
+        {
+            template:(a,b)=>
+            `✏️ 小美有 ${a} 支鉛筆<br>
+            又買了 ${b} 支鉛筆<br><br>
+            現在共有幾支鉛筆？`
+        },
+        {
+            template:(a,b)=>
+            `🐰 農場有 ${a} 隻兔子<br>
+            又來了 ${b} 隻兔子<br><br>
+            現在共有幾隻兔子？`
+        }
+    ];
+
+    const subStories=[
+        {
+            template:(a,b)=>
+            `🍬 小安有 ${a} 顆糖果<br>
+            吃掉了 ${b} 顆糖果<br><br>
+            還剩下幾顆糖果？`
+        },
+        {
+            template:(a,b)=>
+            `🚗 停車場有 ${a} 台車<br>
+            開走了 ${b} 台車<br><br>
+            還剩下幾台車？`
+        },
+        {
+            template:(a,b)=>
+            `📚 圖書館有 ${a} 本故事書<br>
+            借出了 ${b} 本<br><br>
+            還剩下幾本故事書？`
+        }
+    ];
+
+    let isAdd=Math.random()>0.5;
+
+    if(isAdd){
+
+        let a=Math.floor(Math.random()*40)+10;
+        let b=Math.floor(Math.random()*30)+10;
+
+        correctAnswer=a+b;
+
+        let story=
+        addStories[
+            Math.floor(Math.random()*addStories.length)
+        ];
+
+        document.getElementById("question").innerHTML=
+        story.template(a,b);
+
+    }else{
+
+        let a=Math.floor(Math.random()*80)+20;
+        let b=Math.floor(Math.random()*20)+10;
+
+        if(b>=a){
+            b=Math.floor(a/2);
+        }
+
+        correctAnswer=a-b;
+
+        let story=
+        subStories[
+            Math.floor(Math.random()*subStories.length)
+        ];
+
+        document.getElementById("question").innerHTML=
+        story.template(a,b);
+    }
+
+    showMoles();
+}
+
+function showMoles(){
+
+    const moles=document.querySelectorAll(".mole");
+
+    moles.forEach(m=>{
+        m.classList.remove("show");
+    });
+
+    const correctIndex=
+    Math.floor(Math.random()*moles.length);
+
+    moles.forEach((mole,index)=>{
+
+        let value;
+
+        if(index===correctIndex){
+
+            value=correctAnswer;
+
+        }else{
+
+            do{
+                value=
+                correctAnswer +
+                Math.floor(Math.random()*21)-10;
+            }
+            while(value===correctAnswer || value<0);
+        }
+
+        mole.dataset.answer=value;
+        mole.textContent=value;
+        mole.classList.add("show");
+
+    });
+}
+
+function startGame(){
+
+    score=0;
+    timeLeft=60;
+    gameRunning=true;
+
+    document.getElementById("score").textContent=0;
+    document.getElementById("time").textContent=60;
+    document.getElementById("result").textContent="";
+    document.getElementById("level").textContent=
+    "等級：數學小新手";
+
+    generateQuestion();
+
+    const timer=setInterval(()=>{
+
+        timeLeft--;
+
+        document.getElementById("time").textContent=
+        timeLeft;
+
+        if(timeLeft<=0){
+
+            clearInterval(timer);
+
+            gameRunning=false;
+
+            document.querySelectorAll(".mole")
+            .forEach(m=>m.classList.remove("show"));
+
+            let title="數學小新手";
+
+            if(score>=50) title="數學小高手";
+            if(score>=100) title="數學達人";
+            if(score>=150) title="數學大師";
+
+            document.getElementById("result").innerHTML=
+            `🎉 遊戲結束！<br>
+            得分：${score}<br>
+            稱號：${title}`;
+        }
+
+    },1000);
+}
+
+</script>
+
+</body>
+</html>
